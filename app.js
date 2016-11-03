@@ -4,20 +4,19 @@ var express = require('express');
 	session = require('express-session'),
 	passport = require('passport'),
 	configDB = require('./app/config/database'),
-	mongoose = require('mongoose');
-	
+	mongoose = require('mongoose'),
+	flash = require('connect-flash');
+
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/app/views');
 mongoose.connect(configDB.url);
  require('./app/config/passport')(passport);
- app.use(bodyParser.urlencoded({
- 	extended: true
- 	}));
- 	
+ app.use(bodyParser());
+
  app.use(session({
  	secret: "thisisasecret"
  }));
- 
+app.use(flash());
  app.use(passport.initialize());
  app.use(passport.session());
 

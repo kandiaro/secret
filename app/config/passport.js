@@ -13,9 +13,9 @@ passport.serializeUser(function(user, done) {
             done(err, user);
         });
     });
-    
-    
-    
+
+
+
 passport.use('login', new LocalStrategy({
  		usernameField : 'email',
         passwordField : 'password',
@@ -25,32 +25,45 @@ passport.use('login', new LocalStrategy({
 	console.log('login');
 	User.findOne({email: username}, function(err, user){
 		if(err){return done(err);}
-		if(!user){console.log("incorrect login");return done(null, false, { message: 'Incorrect username.'});}
+		if(!user){return done(null, false, { message: req.flash('loginMessage', 'Incorrect email.')});}
 		if(!user.validPassword(password)){
-			console.log("incorrect pass");return done(null, false, {message: 'Incorrect password.'});
+  		return done(null, false, {message: req.flash('loginMessage', 'Incorrect password.')});
 		}
 		return done(null, user);
 		});
-		
+
 	}));
-	
+
+
+
 passport.use('register', new LocalStrategy({
-		usernameField: 'email',
-		passwordField: 'password',
+		usernameField : 'email',
+		passwordField : 'password',
 		passReqToCallback : true
 		},
 		function(req, username, password, done){
-		console.log('register'+username, password);
-			var newUser = new User();
-			newUser.email = username;
-			newUser.password = newUser.generateHash(password);
-			console.log(newUser.email, newUser.password);
-			newUser.save(function(err){
-			console.log('saving');
-				if(err)
-					throw err;
-					console.log('savEd');
-			return done(null, newUser);
-			});
-}));
+		    console.log('register'+username, password, req.body.displayname);
+
+        User.findOne({email: new RegExp(username,"i")}, function(err, user){
+          if(err) return done(err);
+          if(user) return done(null,false,{message: req.flash('loginMessage','There is another user already registered with this email address.')})
+          else{
+
+            var newUser = new User();
+            newUser.displayname = req.body.displayname;
+            newUser.email = username;
+            newUser.password = newUser.generateHash(password);
+            console.log(newUser.email, newUser.password);
+          newUser.save(function(err){
+          console.log('saving');
+            if(err)
+              return done(err);
+              console.log('savEd');
+          return done(null, newUser);
+          });
+          }
+        });
+
+    }
+));
 }
