@@ -4,11 +4,13 @@ var LocalStrategy = require('passport-local').Strategy;
 module.exports = function(passport) {
 
 passport.serializeUser(function(user, done) {
+        console.log('Serialize Called');
         done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
+      console.log('De-Serialize Called');
         User.findById(id, function(err, user) {
             done(err, user);
         });
@@ -29,6 +31,7 @@ passport.use('login', new LocalStrategy({
 		if(!user.validPassword(password)){
   		return done(null, false, {message: req.flash('loginMessage', 'Incorrect password.')});
 		}
+    req.session.key=req.body.email;
 		return done(null, user);
 		});
 

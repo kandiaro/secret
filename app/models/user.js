@@ -8,6 +8,7 @@ var userSchema = mongoose.Schema({
         displayname  : { type: String, required: true, trim: true },
         email        : { type: String, required: true, trim: true, lowercase: true},
         password     : { type: String, required: true},
+        usercreated  : { type: Date, default: Date.now },
         type         : { type: String, default: 'basic' }
 });
 

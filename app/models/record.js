@@ -7,11 +7,12 @@ var recordSchema = new Schema({
     username  : { type: String },
     password  : { type: String },
     note      : { type: String },
-    listid    : { type: ObjectId, ref: 'List', required: true}
+    recordcreated: { type: Date, default: Date.now},
+    listid    : { type: Schema.ObjectId, ref: 'List', required: true}
 });
 
-entrySchema.methods.generateHash = function(password) {
+recordSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
-module.exports = mongoose.model('Record', entrySchema);
+module.exports = mongoose.model('Record', recordSchema);

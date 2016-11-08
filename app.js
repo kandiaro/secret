@@ -2,10 +2,13 @@ var express = require('express');
 	app = new express(),
 	bodyParser = require ('body-parser'),
 	session = require('express-session'),
+	redis = require('redis'),
+	redisStore = require('connect-redis')(session),
 	passport = require('passport'),
 	configDB = require('./app/config/database'),
 	mongoose = require('mongoose'),
-	flash = require('connect-flash');
+	flash = require('connect-flash'),
+	client = redis.createClient();
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/app/views');
@@ -14,7 +17,8 @@ mongoose.connect(configDB.url);
  app.use(bodyParser());
 
  app.use(session({
- 	secret: "thisisasecret"
+ 	secret: "thisisasecret",
+	store: new redisStore({ host: 'localhost', port: 6379, client: client, ttl: 260}),
  }));
 app.use(flash());
  app.use(passport.initialize());
